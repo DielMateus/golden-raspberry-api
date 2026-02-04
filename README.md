@@ -65,15 +65,9 @@ A API estará disponível em `http://localhost:3000`.
 
 ## 🧪 Como Rodar os Testes
 
-Os testes de integração foram escritos com Vitest e cobrem todos os endpoints e a lógica de negócio principal.
+O projeto utiliza **Vitest** e atingiu **100% de cobertura** em todos os arquivos de lógica e rotas.
 
 ### 1. Rodar Testes Localmente
-
-```bash
-pnpm test
-```
-
-Para ver a cobertura de testes:
 
 ```bash
 pnpm test:coverage
@@ -93,7 +87,7 @@ REST Client --> É uma extensão para quem utiliza VSCODE.
 Este comando utiliza o `profile` de teste definido no `docker-compose.yml` para construir a imagem de teste e executar os testes em um ambiente isolado.
 
 ```bash
-docker-compose --profile test up --build
+docker-compose --profile test up --build ou docker-compose run --rm test
 ```
 
 ## 📂 Estrutura do Projeto
