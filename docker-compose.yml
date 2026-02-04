@@ -1,0 +1,67 @@
+services:
+  # ============================================
+  # API Service - Production
+  # ============================================
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: golden-raspberry-api
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - HOST=0.0.0.0
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:3000/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    restart: unless-stopped
+
+  # ============================================
+  # Test Service
+  # ============================================
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    container_name: golden-raspberry-test
+    environment:
+      - NODE_ENV=test
+    profiles:
+      - test
+
+  # ============================================
+  # Development Service
+  # ============================================
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: test
+    container_name: golden-raspberry-dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - HOST=0.0.0.0
+    volumes:
+      - ./src:/app/src:ro
+      - ./data:/app/data:ro
+    command: ["pnpm", "dev"]
+    profiles:
+      - dev
