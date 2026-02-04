@@ -210,7 +210,6 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
       expect(producers).toContain("Producer A");
       expect(producers).toContain("Producer B");
 
-      // Todos devem ter intervalo 1
       body.min.forEach((item: { interval: number }) => {
         expect(item.interval).toBe(1);
       });
@@ -218,9 +217,9 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
 
     it("should return empty arrays when no producers have multiple wins", async () => {
       const csvNoMultipleWins = `year;title;studios;producers;winner
-1980;Movie 1;Studio 1;Producer A;yes
-1990;Movie 2;Studio 2;Producer B;yes
-2000;Movie 3;Studio 3;Producer C;yes`;
+      1980;Movie 1;Studio 1;Producer A;yes
+      1990;Movie 2;Studio 2;Producer B;yes
+      2000;Movie 3;Studio 3;Producer C;yes`;
 
       loadCSVFromString(csvNoMultipleWins);
 
@@ -237,8 +236,8 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
 
     it('should correctly parse producers separated by "and"', async () => {
       const csvWithAnd = `year;title;studios;producers;winner
-1980;Movie 1;Studio 1;Producer A and Producer B;yes
-1990;Movie 2;Studio 2;Producer A;yes`;
+      1980;Movie 1;Studio 1;Producer A and Producer B;yes
+      1990;Movie 2;Studio 2;Producer A;yes`;
 
       loadCSVFromString(csvWithAnd);
 
@@ -260,8 +259,8 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
 
     it("should correctly parse producers separated by comma", async () => {
       const csvWithComma = `year;title;studios;producers;winner
-1980;Movie 1;Studio 1;Producer A, Producer B;yes
-1985;Movie 2;Studio 2;Producer A;yes`;
+      1980;Movie 1;Studio 1;Producer A, Producer B;yes
+      1985;Movie 2;Studio 2;Producer A;yes`;
 
       loadCSVFromString(csvWithComma);
 
@@ -282,9 +281,9 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
 
     it("should handle producer with more than two wins", async () => {
       const csvMultipleWins = `year;title;studios;producers;winner
-1980;Movie 1;Studio 1;Producer A;yes
-1985;Movie 2;Studio 2;Producer A;yes
-2000;Movie 3;Studio 3;Producer A;yes`;
+      1980;Movie 1;Studio 1;Producer A;yes
+      1985;Movie 2;Studio 2;Producer A;yes
+      2000;Movie 3;Studio 3;Producer A;yes`;
 
       loadCSVFromString(csvMultipleWins);
 
@@ -296,7 +295,7 @@ describe("Prize Intervals Endpoint - Integration Tests", () => {
       const body = JSON.parse(response.body);
 
       // Producer A tem dois intervalos: 5 anos (1980-1985) e 15 anos (1985-2000)
-      // Min deve ser 5, Max deve ser 15
+      // Min 5, Max 15
       expect(body.min[0].interval).toBe(5);
       expect(body.max[0].interval).toBe(15);
     });
@@ -522,6 +521,139 @@ describe("Movies CRUD Endpoint - Integration Tests", () => {
       expect(response.statusCode).toBe(404);
     });
   });
+
+  //Melhorando os testes de integração para cobrir mais linhas do CRUD de movies
+  it("should return 400 when updating a movie with invalid data types", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/movies/1",
+      payload: { year: "not-a-number" },
+    });
+    expect(response.statusCode).toBe(400);
+  });
+
+  it("should return 404 when trying to delete a non-existent movie", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/movies/999999",
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when trying to patch a non-existent movie", async () => {
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/movies/999999",
+      payload: { title: "New Title" },
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when getting a non-existent movie", async () => {
+    const response = await app.inject({
+      method: "GET",
+      url: "/movies/999999", // ID não existe
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when updating a non-existent movie", async () => {
+    const response = await app.inject({
+      method: "PUT",
+      url: "/movies/999999",
+      payload: {
+        title: "Non-existent",
+        year: 2024,
+        studios: "None",
+        producers: "None",
+        winner: "no",
+      },
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when patching a non-existent movie", async () => {
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/movies/999999",
+      payload: { title: "New Title" },
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when deleting a non-existent movie id", async () => {
+    const response = await app.inject({
+      method: "DELETE",
+      url: "/movies/9999",
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should return 404 when patching a non-existent movie id", async () => {
+    const response = await app.inject({
+      method: "PATCH",
+      url: "/movies/9999",
+      payload: { title: "Novo Titulo" },
+    });
+    expect(response.statusCode).toBe(404);
+  });
+
+  it("should cover all 404 paths in movie routes", async () => {
+    const idInexistente = 999999;
+    const resGet = await app.inject({
+      method: "GET",
+      url: `/movies/${idInexistente}`,
+    });
+    expect(resGet.statusCode).toBe(404);
+
+    const resPut = await app.inject({
+      method: "PUT",
+      url: `/movies/${idInexistente}`,
+      payload: { year: 2024, title: "T", studios: "S", producers: "P" },
+    });
+    expect(resPut.statusCode).toBe(404);
+
+    const resPatch = await app.inject({
+      method: "PATCH",
+      url: `/movies/${idInexistente}`,
+      payload: { title: "New" },
+    });
+    expect(resPatch.statusCode).toBe(404);
+  });
+
+  it("should cover catch blocks in movie service", async () => {
+    const resDeleteErr = await app.inject({
+      method: "DELETE",
+      url: "/movies/undefined",
+    });
+
+    const resUpdateErr = await app.inject({
+      method: "POST",
+      url: "/movies",
+      payload: {
+        title: null,
+        year: 2024,
+        studios: "S",
+        producers: "P",
+      },
+    });
+    expect(resUpdateErr.statusCode).toBe(400);
+  });
+
+  it("should handle producers with only one win (no intervals)", async () => {
+    resetDatabase();
+    createTables();
+    loadCSVFromString(`year;title;studios;producers;winner
+    1980;Movie 1;Studio 1;Producer Solo;yes`); // Apenas uma vitória, não gera intervalo
+
+    const res = await app.inject({
+      method: "GET",
+      url: "/producers/awards-interval",
+    });
+    const body = JSON.parse(res.body);
+    expect(body.min).toEqual([]);
+    expect(body.max).toEqual([]);
+  });
 });
 
 describe("Real CSV Data - Integration Tests", () => {
@@ -543,15 +675,14 @@ describe("Real CSV Data - Integration Tests", () => {
   });
 
   it("should correctly process the original movielist.csv data", async () => {
-    // Carrega dados similares ao CSV original
     const originalStyleCSV = `year;title;studios;producers;winner
-1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
-1984;Bolero;Cannon Films;Bo Derek;yes
-1990;Ghosts Can't Do It;Triumph Releasing;Bo Derek;yes
-1986;Under the Cherry Moon;Warner Bros.;Bob Cavallo, Joe Ruffalo and Steve Fargnoli;yes
-1990;The Adventures of Ford Fairlane;20th Century Fox;Steven Perry and Joel Silver;yes
-1991;Hudson Hawk;TriStar Pictures;Joel Silver;yes
-2017;The Emoji Movie;Columbia Pictures;Michelle Raimo Kouyate;yes`;
+      1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
+      1984;Bolero;Cannon Films;Bo Derek;yes
+      1990;Ghosts Can't Do It;Triumph Releasing;Bo Derek;yes
+      1986;Under the Cherry Moon;Warner Bros.;Bob Cavallo, Joe Ruffalo and Steve Fargnoli;yes
+      1990;The Adventures of Ford Fairlane;20th Century Fox;Steven Perry and Joel Silver;yes
+      1991;Hudson Hawk;TriStar Pictures;Joel Silver;yes
+      2017;The Emoji Movie;Columbia Pictures;Michelle Raimo Kouyate;yes`;
 
     loadCSVFromString(originalStyleCSV);
 
@@ -562,11 +693,6 @@ describe("Real CSV Data - Integration Tests", () => {
 
     expect(response.statusCode).toBe(200);
     const body = JSON.parse(response.body);
-
-    // Bo Derek tem intervalo de 6 anos (1984-1990)
-    // Joel Silver tem intervalo de 1 ano (1990-1991)
-
-    // Verifica min (Joel Silver com 1 ano)
     expect(body.min.length).toBeGreaterThan(0);
     const joelSilver = body.min.find(
       (item: { producer: string }) => item.producer === "Joel Silver",
@@ -576,7 +702,6 @@ describe("Real CSV Data - Integration Tests", () => {
     expect(joelSilver.previousWin).toBe(1990);
     expect(joelSilver.followingWin).toBe(1991);
 
-    // Verifica max (Bo Derek com 6 anos)
     expect(body.max.length).toBeGreaterThan(0);
     const boDerek = body.max.find(
       (item: { producer: string }) => item.producer === "Bo Derek",

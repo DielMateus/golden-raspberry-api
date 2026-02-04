@@ -1,6 +1,6 @@
 # API Golden Raspberry Awards
 
-Esta é uma API RESTful desenvolvida como solução para o desafio de back-end da Outsera. A aplicação lê uma lista de indicados e vencedores da categoria "Pior Filme" do Golden Raspberry Awards e expõe um endpoint para consultar o produtor com o maior e o menor intervalo entre prêmios consecutivos.
+A aplicação lê uma lista de indicados e vencedores da categoria "Pior Filme" do Golden Raspberry Awards e expõe um endpoint para consultar o produtor com o maior e o menor intervalo entre prêmios consecutivos.
 
 ## ✨ Funcionalidades
 
@@ -35,7 +35,7 @@ Esta é uma API RESTful desenvolvida como solução para o desafio de back-end d
 ### 1. Clonar o Repositório
 
 ```bash
-git clone <URL_DO_REPOSITORIO>
+git clone https://github.com/DielMateus/golden-raspberry-api.git
 cd golden-raspberry-api
 ```
 

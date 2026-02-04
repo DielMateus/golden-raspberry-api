@@ -1,7 +1,4 @@
 services:
-  # ============================================
-  # API Service - Production
-  # ============================================
   api:
     build:
       context: .
@@ -30,9 +27,6 @@ services:
       start_period: 5s
     restart: unless-stopped
 
-  # ============================================
-  # Test Service
-  # ============================================
   test:
     build:
       context: .
@@ -44,9 +38,6 @@ services:
     profiles:
       - test
 
-  # ============================================
-  # Development Service
-  # ============================================
   dev:
     build:
       context: .

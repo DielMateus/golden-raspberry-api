@@ -1,15 +1,15 @@
-import { resolve, dirname } from 'path';
-import { fileURLToPath } from 'url';
-import { buildApp } from './app.js';
-import { loadCSVData } from './database/seed.js';
+import { resolve, dirname } from "path";
+import { fileURLToPath } from "url";
+import { buildApp } from "./app.js";
+import { loadCSVData } from "./database/seed.js";
 
-// Obtém o diretório atual para ESM
+// Obtém o diretório atual
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Configurações do servidor
-const PORT = parseInt(process.env.PORT || '3000', 10);
-const HOST = process.env.HOST || '0.0.0.0';
+const PORT = parseInt(process.env.PORT || "3000", 10);
+const HOST = process.env.HOST || "0.0.0.0";
 
 /**
  * Inicializa e inicia o servidor
@@ -19,10 +19,10 @@ async function start(): Promise<void> {
 
   try {
     // Carrega os dados do CSV ao iniciar a aplicação
-    const csvPath = resolve(__dirname, '../data/movielist.csv');
+    const csvPath = resolve(__dirname, "../data/movielist.csv");
     console.log(`Loading CSV data from: ${csvPath}`);
     loadCSVData(csvPath);
-    console.log('CSV data loaded successfully!');
+    console.log("CSV data loaded successfully!");
 
     // Inicia o servidor
     await app.listen({ port: PORT, host: HOST });

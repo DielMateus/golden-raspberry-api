@@ -1,4 +1,4 @@
-import { getDatabase } from './connection.js';
+import { getDatabase } from "./connection.js";
 
 /**
  * Cria as tabelas necessárias no banco de dados
@@ -31,9 +31,8 @@ export function createTables(): void {
 
 /**
  * Remove todas as tabelas do banco de dados
- * Útil para testes e reset
  */
 export function dropTables(): void {
   const db = getDatabase();
-  db.exec('DROP TABLE IF EXISTS movies');
+  db.exec("DROP TABLE IF EXISTS movies");
 }

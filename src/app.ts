@@ -17,7 +17,7 @@ export function buildApp(options = {}): FastifyInstance {
   app.register(movieRoutes);
   app.register(producerRoutes);
 
-  // Rota de health check
+  // Rota de health check(saude da aplicação)
   app.get("/health", async () => {
     return { status: "ok", timestamp: new Date().toISOString() };
   });

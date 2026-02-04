@@ -15,16 +15,6 @@ export class PrizeIntervalService {
    * @param producersString - String com os nomes dos produtores
    * @returns Array com os nomes dos produtores individuais
    */
-  // private parseProducers(producersString: string): string[] {
-  //   // Primeiro, substitui " and " por vírgula para normalizar
-  //   const normalized = producersString.replace(/\s+and\s+/gi, ", ");
-
-  //   // Divide por vírgula e limpa espaços
-  //   return normalized
-  //     .split(",")
-  //     .map((p) => p.trim())
-  //     .filter((p) => p.length > 0);
-  // }
 
   private parseProducers(producersString: string): string[] {
     return producersString
@@ -69,10 +59,8 @@ export class PrizeIntervalService {
     const intervals: ProducerInterval[] = [];
 
     for (const [producer, years] of Object.entries(producerWins)) {
-      // Só considera produtores com mais de uma vitória
       if (years.length < 2) continue;
 
-      // Calcula intervalos entre vitórias consecutivas
       for (let i = 1; i < years.length; i++) {
         intervals.push({
           producer,
@@ -97,7 +85,6 @@ export class PrizeIntervalService {
       return { min: [], max: [] };
     }
 
-    // Encontra o menor e maior intervalo
     let minInterval = Infinity;
     let maxInterval = -Infinity;
 
@@ -110,10 +97,8 @@ export class PrizeIntervalService {
       }
     }
 
-    // Filtra todos os produtores com o menor intervalo
     const minIntervals = allIntervals.filter((i) => i.interval === minInterval);
 
-    // Filtra todos os produtores com o maior intervalo
     const maxIntervals = allIntervals.filter((i) => i.interval === maxInterval);
 
     return {
@@ -123,5 +108,4 @@ export class PrizeIntervalService {
   }
 }
 
-// Exporta uma instância singleton do serviço
 export const prizeIntervalService = new PrizeIntervalService();

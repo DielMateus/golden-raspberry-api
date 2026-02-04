@@ -1,16 +1,15 @@
-import { getDatabase } from '../database/connection.js';
-import type { Movie } from '../types/index.js';
+import { getDatabase } from "../database/connection.js";
+import type { Movie } from "../types/index.js";
 
 /**
  * Serviço para operações com filmes
  */
 export class MovieService {
-  /**
-   * Obtém todos os filmes
-   */
   getAll(): Movie[] {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT * FROM movies ORDER BY year DESC, title ASC');
+    const stmt = db.prepare(
+      "SELECT * FROM movies ORDER BY year DESC, title ASC",
+    );
     const rows = stmt.all() as Array<{
       id: number;
       year: number;
@@ -35,15 +34,17 @@ export class MovieService {
    */
   getById(id: number): Movie | null {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT * FROM movies WHERE id = ?');
-    const row = stmt.get(id) as {
-      id: number;
-      year: number;
-      title: string;
-      studios: string;
-      producers: string;
-      winner: number;
-    } | undefined;
+    const stmt = db.prepare("SELECT * FROM movies WHERE id = ?");
+    const row = stmt.get(id) as
+      | {
+          id: number;
+          year: number;
+          title: string;
+          studios: string;
+          producers: string;
+          winner: number;
+        }
+      | undefined;
 
     if (!row) return null;
 
@@ -62,7 +63,9 @@ export class MovieService {
    */
   getWinners(): Movie[] {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT * FROM movies WHERE winner = 1 ORDER BY year ASC');
+    const stmt = db.prepare(
+      "SELECT * FROM movies WHERE winner = 1 ORDER BY year ASC",
+    );
     const rows = stmt.all() as Array<{
       id: number;
       year: number;
@@ -87,7 +90,9 @@ export class MovieService {
    */
   getByYear(year: number): Movie[] {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT * FROM movies WHERE year = ? ORDER BY title ASC');
+    const stmt = db.prepare(
+      "SELECT * FROM movies WHERE year = ? ORDER BY title ASC",
+    );
     const rows = stmt.all(year) as Array<{
       id: number;
       year: number;
@@ -110,7 +115,7 @@ export class MovieService {
   /**
    * Cria um novo filme
    */
-  create(movie: Omit<Movie, 'id'>): Movie {
+  create(movie: Omit<Movie, "id">): Movie {
     const db = getDatabase();
     const stmt = db.prepare(`
       INSERT INTO movies (year, title, studios, producers, winner)
@@ -122,7 +127,7 @@ export class MovieService {
       movie.title,
       movie.studios,
       movie.producers,
-      movie.winner ? 1 : 0
+      movie.winner ? 1 : 0,
     );
 
     return {
@@ -134,7 +139,7 @@ export class MovieService {
   /**
    * Atualiza um filme existente
    */
-  update(id: number, movie: Partial<Omit<Movie, 'id'>>): Movie | null {
+  update(id: number, movie: Partial<Omit<Movie, "id">>): Movie | null {
     const existing = this.getById(id);
     if (!existing) return null;
 
@@ -153,7 +158,7 @@ export class MovieService {
       updated.studios,
       updated.producers,
       updated.winner ? 1 : 0,
-      id
+      id,
     );
 
     return updated;
@@ -164,7 +169,7 @@ export class MovieService {
    */
   delete(id: number): boolean {
     const db = getDatabase();
-    const stmt = db.prepare('DELETE FROM movies WHERE id = ?');
+    const stmt = db.prepare("DELETE FROM movies WHERE id = ?");
     const result = stmt.run(id);
     return result.changes > 0;
   }
@@ -174,7 +179,7 @@ export class MovieService {
    */
   count(): number {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT COUNT(*) as count FROM movies');
+    const stmt = db.prepare("SELECT COUNT(*) as count FROM movies");
     const result = stmt.get() as { count: number };
     return result.count;
   }
@@ -184,11 +189,12 @@ export class MovieService {
    */
   countWinners(): number {
     const db = getDatabase();
-    const stmt = db.prepare('SELECT COUNT(*) as count FROM movies WHERE winner = 1');
+    const stmt = db.prepare(
+      "SELECT COUNT(*) as count FROM movies WHERE winner = 1",
+    );
     const result = stmt.get() as { count: number };
     return result.count;
   }
 }
 
-// Exporta uma instância singleton do serviço
 export const movieService = new MovieService();
