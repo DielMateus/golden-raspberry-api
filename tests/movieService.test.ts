@@ -6,10 +6,6 @@ import {
   loadCSVFromString,
 } from "../src/database/index.js";
 
-/**
- * Testes unitários para o MovieService
- * Foco em cobrir as linhas 181-185 e 191-197 (count e countWinners)
- */
 describe("MovieService - Unit Tests", () => {
   beforeEach(() => {
     resetDatabase();

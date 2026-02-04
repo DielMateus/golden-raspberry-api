@@ -1,12 +1,8 @@
 import { getDatabase } from "./connection.js";
 
-/**
- * Cria as tabelas necessárias no banco de dados
- */
 export function createTables(): void {
   const db = getDatabase();
 
-  // Tabela de filmes
   db.exec(`
     CREATE TABLE IF NOT EXISTS movies (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -29,9 +25,6 @@ export function createTables(): void {
   `);
 }
 
-/**
- * Remove todas as tabelas do banco de dados
- */
 export function dropTables(): void {
   const db = getDatabase();
   db.exec("DROP TABLE IF EXISTS movies");

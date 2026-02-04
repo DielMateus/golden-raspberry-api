@@ -14,7 +14,6 @@ export function loadCSVData(csvPath: string): void {
   // Cria as tabelas se não existirem
   createTables();
 
-  // Lê o arquivo CSV
   const csvContent = readFileSync(csvPath, "utf-8");
 
   // Parseia o CSV com delimitador ponto e vírgula

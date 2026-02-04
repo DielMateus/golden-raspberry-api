@@ -1,9 +1,6 @@
 import { getDatabase } from "../database/connection.js";
 import type { Movie } from "../types/index.js";
 
-/**
- * Serviço para operações com filmes
- */
 export class MovieService {
   getAll(): Movie[] {
     const db = getDatabase();

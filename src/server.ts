@@ -24,7 +24,6 @@ async function start(): Promise<void> {
     loadCSVData(csvPath);
     console.log("CSV data loaded successfully!");
 
-    // Inicia o servidor
     await app.listen({ port: PORT, host: HOST });
     console.log(`Server is running on http://${HOST}:${PORT}`);
   } catch (err) {
@@ -33,5 +32,4 @@ async function start(): Promise<void> {
   }
 }
 
-// Inicia o servidor
 start();

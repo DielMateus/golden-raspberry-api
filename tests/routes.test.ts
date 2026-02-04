@@ -7,11 +7,6 @@ import {
 } from "../src/database/index.js";
 import { FastifyInstance } from "fastify";
 
-/**
- * Testes adicionais para cobrir linhas faltantes das rotas
- * Foco nas linhas 122-123 e 162-163 do movieRoutes.ts
- */
-
 const SAMPLE_CSV_DATA = `year;title;studios;producers;winner
 1980;Can't Stop the Music;Associated Film Distribution;Allan Carr;yes
 1984;Where the Boys Are '84;TriStar Pictures;Allan Carr;
