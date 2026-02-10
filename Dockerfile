@@ -1,10 +1,5 @@
-# ============================================
-# Multi-stage build for optimized production image
-# ============================================
-
 FROM node:22-alpine AS builder
 
-# Install build dependencies for better-sqlite3
 RUN apk add --no-cache python3 make g++
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -21,7 +16,6 @@ RUN pnpm build
 
 FROM node:22-alpine AS production
 
-# Install build dependencies for better-sqlite3 native compilation
 RUN apk add --no-cache python3 make g++
 
 RUN corepack enable && corepack prepare pnpm@latest --activate
@@ -30,7 +24,6 @@ WORKDIR /app
 
 COPY package.json pnpm-lock.yaml* ./
 
-# Install production dependencies and force rebuild of native modules
 RUN pnpm install --prod --frozen-lockfile && \
     cd /app/node_modules/.pnpm/better-sqlite3@*/node_modules/better-sqlite3 && \
     npm run build-release

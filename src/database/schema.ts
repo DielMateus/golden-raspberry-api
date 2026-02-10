@@ -14,12 +14,10 @@ export function createTables(): void {
     )
   `);
 
-  // Índice para otimizar consultas por vencedores
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_movies_winner ON movies(winner)
   `);
 
-  // Índice para otimizar consultas por ano
   db.exec(`
     CREATE INDEX IF NOT EXISTS idx_movies_year ON movies(year)
   `);

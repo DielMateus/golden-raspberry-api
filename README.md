@@ -1,16 +1,16 @@
-# API Golden Raspberry Awards
+# 🏆 API Golden Raspberry Awards
 
-A aplicação lê uma lista de indicados e vencedores da categoria "Pior Filme" do Golden Raspberry Awards e expõe um endpoint para consultar o produtor com o maior e o menor intervalo entre prêmios consecutivos.
+A aplicação lê uma lista de indicados e vencedores da categoria "Pior Filme" do Golden Raspberry Awards e expõe um endpoint para consultar os produtores com o maior e o menor intervalo entre prêmios consecutivos.
 
 ## ✨ Funcionalidades
 
-- **Carga de Dados Automática**: Carrega a lista de filmes do arquivo `movielist.csv` para um banco de dados SQLite em memória na inicialização.
-- **Banco de Dados em Memória**: Utiliza `better-sqlite3` para um banco de dados rápido e que não requer instalação externa.
-- **API RESTful (Nível 2 de Richardson)**: Endpoints para consultar os intervalos de prêmios e realizar operações CRUD na entidade de filmes.
-- **Cálculo de Intervalos**: Algoritmo otimizado para encontrar os produtores com os maiores e menores intervalos entre vitórias.
-- **Estrutura Dockerizada**: `Dockerfile` multi-stage e `docker-compose.yml` para ambientes de desenvolvimento, teste e produção.
-- **Testes de Integração**: Cobertura de testes completa com Vitest para garantir a precisão e o funcionamento da API.
-- **CI/CD com GitHub Actions**: Workflow automatizado para rodar testes e construir a imagem Docker a cada push ou pull request.
+- **Carga de Dados Automática**: Processa o arquivo `movielist.csv` e popula um banco de dados SQLite em memória durante a inicialização.
+- **Banco de Dados em Memória**: Utiliza `better-sqlite3` para persistência volátil de alta performance, sem necessidade de instalação externa.
+- **API RESTful**: Endpoint otimizado para consulta de intervalos de prêmios seguindo os padrões de maturidade Richardson Nível 2.
+- **Cálculo de Intervalos**: Algoritmo que identifica os intervalos mínimo e máximo entre vitórias consecutivas, tratando corretamente empates e múltiplos produtores.
+- **Estrutura Dockerizada**: `Dockerfile` multi-stage e `docker-compose.yml` configurados para ambientes de desenvolvimento, teste e produção.
+- **Integridade de Dados**: Testes de integração que validam os resultados exatos do dataset da proposta e garantem que a lógica falhe caso os dados sejam alterados.
+- **CI/CD com GitHub Actions**: Workflow automatizado para execução de testes e build da imagem Docker a cada push ou pull request.
 
 ## 🛠️ Tecnologias Utilizadas
 
@@ -55,19 +55,17 @@ pnpm dev
 
 ### 4. Executando com Docker
 
-A forma mais simples de subir a aplicação em um ambiente de produção simulado é usando o Docker Compose.
+A aplicação utiliza multi-stage builds para garantir portabilidade e performance.
 
 ```bash
 docker-compose up --build
 ```
 
-A API estará disponível em `http://localhost:3000`.
+Nota: O Dockerfile realiza o rebuild nativo do better-sqlite3, garantindo compatibilidade entre arquiteturas (ARM64/x64).
 
 ## 🧪 Como Rodar os Testes
 
-O projeto utiliza **Vitest** e atingiu **100% de cobertura** em todos os arquivos de lógica e rotas.
-
-### 1. Rodar Testes Localmente
+### 1. Rodar Localmente
 
 ```bash
 pnpm test:coverage
@@ -84,50 +82,37 @@ REST Client --> É uma extensão para quem utiliza VSCODE.
 
 ### 3. Rodar Testes com Docker
 
-Este comando utiliza o `profile` de teste definido no `docker-compose.yml` para construir a imagem de teste e executar os testes em um ambiente isolado.
-
 ```bash
-docker-compose --profile test up --build ou docker-compose run --rm test
+docker-compose --profile test up --build
+ou
+docker-compose run --rm test
 ```
 
 ## 📂 Estrutura do Projeto
-
-A estrutura de arquivos foi organizada para manter uma clara separação de responsabilidades:
 
 ```plaintext
 /
 ├── .github/workflows/    # Workflows de CI/CD (GitHub Actions)
 ├── data/
-│   └── movielist.csv     # Arquivo CSV com os dados dos filmes
+│   └── movielist.csv     # Dataset original (movielist.csv)
 ├── dist/                 # Código transpilado para produção
 ├── src/
 │   ├── database/         # Configuração do SQLite e script de carga (seed)
 │   ├── routes/           # Definição dos endpoints da API
-│   ├── services/         # Lógica de negócio (cálculo de intervalos, CRUD)
+│   ├── services/         # Lógica de negócio (cálculo de intervalos)
 │   ├── types/            # Definições de tipos e interfaces TypeScript
 │   ├── app.ts            # Configuração da instância do Fastify
 │   └── server.ts         # Ponto de entrada da aplicação
-├── tests/                # Testes de integração
-├── .dockerignore         # Arquivos a serem ignorados pelo Docker
-├── .gitignore            # Arquivos a serem ignorados pelo Git
+├── tests/                # Testes de integração e unidade
 ├── Dockerfile            # Dockerfile multi-stage para build e produção
 ├── docker-compose.yml    # Orquestração de containers para diferentes ambientes
-├── package.json          # Dependências e scripts do projeto
-├── pnpm-lock.yaml        # Lockfile do pnpm
-├── tsconfig.json         # Configuração do compilador TypeScript
-├── vitest.config.ts      # Configuração do Vitest
-└── README.md             # Esta documentação
 ```
 
-## 🌐 Endpoints da API
-
-A API segue os princípios REST e o nível 2 de maturidade de Richardson.
-
-### Endpoint Principal
+🌐 Endpoints da API
 
 #### `GET /producers/awards-interval`
 
-Retorna o produtor com o maior intervalo entre dois prêmios consecutivos e o que obteve dois prêmios mais rápido.
+Retorna os produtores com maior e menor intervalo entre prêmios consecutivos.
 
 **Exemplo de Resposta:**
 
@@ -152,19 +137,7 @@ Retorna o produtor com o maior intervalo entre dois prêmios consecutivos e o qu
 }
 ```
 
-### Endpoints de Gerenciamento (CRUD)
-
-A API também provê endpoints para gerenciar os filmes, úteis para testes e futuras extensões.
-
-- `GET /movies`: Lista todos os filmes.
-- `GET /movies?year={ano}`: Filtra filmes por ano.
-- `GET /movies?winner=true`: Filtra apenas os vencedores.
-- `GET /movies/:id`: Obtém um filme por ID.
-- `POST /movies`: Cria um novo filme.
-- `PUT /movies/:id`: Atualiza um filme (substituição completa).
-- `PATCH /movies/:id`: Atualiza um filme parcialmente.
-- `DELETE /movies/:id`: Remove um filme.
-
 ### Health Check
 
 - `GET /health`: Retorna o status da aplicação. Útil para monitoramento.
+  { "status": "ok", "timestamp": "..." }

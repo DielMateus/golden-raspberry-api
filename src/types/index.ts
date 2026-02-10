@@ -1,6 +1,3 @@
-/**
- * Representa um filme no banco de dados
- */
 export interface Movie {
   id?: number;
   year: number;
@@ -10,9 +7,6 @@ export interface Movie {
   winner: boolean;
 }
 
-/**
- * Representa um registro de filme parseado do CSV
- */
 export interface MovieCSVRecord {
   year: string;
   title: string;
@@ -21,9 +15,6 @@ export interface MovieCSVRecord {
   winner: string;
 }
 
-/**
- * Representa um intervalo de prêmio de um produtor
- */
 export interface ProducerInterval {
   producer: string;
   interval: number;
@@ -31,17 +22,11 @@ export interface ProducerInterval {
   followingWin: number;
 }
 
-/**
- * Resposta do endpoint de intervalos de prêmios
- */
 export interface PrizeIntervalResponse {
   min: ProducerInterval[];
   max: ProducerInterval[];
 }
 
-/**
- * Representa os anos de vitória agrupados por produtor
- */
 export interface ProducerWins {
   [producer: string]: number[];
 }

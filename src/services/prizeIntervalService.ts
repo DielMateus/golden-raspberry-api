@@ -1,21 +1,11 @@
-import { movieService } from "./movieService.js";
+import { getDatabase } from "../database/connection.js";
 import type {
   ProducerInterval,
   PrizeIntervalResponse,
   ProducerWins,
 } from "../types/index.js";
 
-/**
- * Serviço para calcular intervalos de prêmios dos produtores
- */
 export class PrizeIntervalService {
-  /**
-   * Separa os produtores de uma string
-   * Os produtores podem estar separados por ", " ou " and "
-   * @param producersString - String com os nomes dos produtores
-   * @returns Array com os nomes dos produtores individuais
-   */
-
   private parseProducers(producersString: string): string[] {
     return producersString
       .split(/,| and /i)
@@ -23,17 +13,16 @@ export class PrizeIntervalService {
       .filter((p) => p.length > 0);
   }
 
-  /**
-   * Agrupa os anos de vitória por produtor
-   * @returns Objeto com produtores como chaves e arrays de anos como valores
-   */
   private getProducerWins(): ProducerWins {
-    const winners = movieService.getWinners();
+    const db = getDatabase();
+    const rows = db
+      .prepare("SELECT * FROM movies WHERE winner = 1 ORDER BY year ASC")
+      .all() as Array<{ producers: string; year: number }>;
+
     const producerWins: ProducerWins = {};
 
-    for (const movie of winners) {
+    for (const movie of rows) {
       const producers = this.parseProducers(movie.producers);
-
       for (const producer of producers) {
         if (!producerWins[producer]) {
           producerWins[producer] = [];
@@ -42,7 +31,6 @@ export class PrizeIntervalService {
       }
     }
 
-    // Ordena os anos para cada produtor
     for (const producer of Object.keys(producerWins)) {
       producerWins[producer].sort((a, b) => a - b);
     }
@@ -50,10 +38,6 @@ export class PrizeIntervalService {
     return producerWins;
   }
 
-  /**
-   * Calcula todos os intervalos entre vitórias consecutivas
-   * @returns Array com todos os intervalos de todos os produtores
-   */
   private calculateAllIntervals(): ProducerInterval[] {
     const producerWins = this.getProducerWins();
     const intervals: ProducerInterval[] = [];
@@ -74,10 +58,6 @@ export class PrizeIntervalService {
     return intervals;
   }
 
-  /**
-   * Obtém os produtores com maior e menor intervalo entre prêmios
-   * @returns Objeto com arrays min e max contendo os intervalos
-   */
   getPrizeIntervals(): PrizeIntervalResponse {
     const allIntervals = this.calculateAllIntervals();
 
@@ -89,21 +69,13 @@ export class PrizeIntervalService {
     let maxInterval = -Infinity;
 
     for (const interval of allIntervals) {
-      if (interval.interval < minInterval) {
-        minInterval = interval.interval;
-      }
-      if (interval.interval > maxInterval) {
-        maxInterval = interval.interval;
-      }
+      if (interval.interval < minInterval) minInterval = interval.interval;
+      if (interval.interval > maxInterval) maxInterval = interval.interval;
     }
 
-    const minIntervals = allIntervals.filter((i) => i.interval === minInterval);
-
-    const maxIntervals = allIntervals.filter((i) => i.interval === maxInterval);
-
     return {
-      min: minIntervals,
-      max: maxIntervals,
+      min: allIntervals.filter((i) => i.interval === minInterval),
+      max: allIntervals.filter((i) => i.interval === maxInterval),
     };
   }
 }
